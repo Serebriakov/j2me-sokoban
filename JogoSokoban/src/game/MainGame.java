@@ -136,7 +136,7 @@ public class MainGame extends GameCanvas implements Runnable {
     private void move(int moveType) {
         if (CURRENT_DIRECTION == moveType) {
             character.nextFrame();
-        } else {
+        } else { 
             CURRENT_DIRECTION = moveType;
             changeCharacterSequence(moveType);
             character.setFrame(0);
