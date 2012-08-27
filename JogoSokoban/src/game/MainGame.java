@@ -3,6 +3,7 @@ package game;
 import game.sprites.Bloco;
 import game.sprites.CharacterSprite;
 import game.sprites.WinSpot;
+import javax.microedition.lcdui.Canvas;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.game.GameCanvas;
 import javax.microedition.lcdui.game.Sprite;
@@ -22,15 +23,16 @@ public class MainGame extends GameCanvas implements Runnable {
     private WinSpot[] winSpot;
     private int count = 0;
     private Cenario[] cenarios;
+    private int cenarioIndexAtual;
+    private Cenario cenarioAtual;
 
     public MainGame() {
         super(false);
         cenarios = new Cenario[4];
-        cenarios[0] = Cenario.getCenario1();
-        cenarios[1] = Cenario.getCenario2();
-        cenarios[2] = Cenario.getCenario3();
-        cenarios[3] = Cenario.getCenario4();
-
+        cenarios[0] = Cenario.getCenario(0);
+        cenarios[1] = Cenario.getCenario(1);
+        cenarios[2] = Cenario.getCenario(2);
+        cenarios[3] = Cenario.getCenario(3);
     }
 
     public void initCenario(Cenario cenario) {
@@ -45,16 +47,19 @@ public class MainGame extends GameCanvas implements Runnable {
     public void run() {
 
         for (int i = 0; i < cenarios.length; i++) {
-            Cenario cenario = cenarios[i];
-            initCenario(cenario);
+            cenarioIndexAtual = i;
+            cenarioAtual = cenarios[i];
+            initCenario(cenarioAtual);
 
-            while (!cenario.isCompleted()) {
+            showGraphicsState("Stage " + i);
+
+            while (!cenarioAtual.isCompleted()) {
                 try {
                     verifyGameState();
 //
                     checkUserInput();
 
-                    updateGameScreen(cenario, getGraphics());
+                    updateGameScreen(cenarioAtual, getGraphics());
 
                     Thread.currentThread().sleep(100);
                     System.out.println(count);
@@ -63,6 +68,7 @@ public class MainGame extends GameCanvas implements Runnable {
                 }
             }
         }
+        showGraphicsState("Fim do jogo");
 
     }
 
@@ -90,7 +96,11 @@ public class MainGame extends GameCanvas implements Runnable {
     }
 
     private void checkUserInput() throws Exception {
+
+
         int keyState = getKeyStates();
+
+        System.out.println(keyState + " " + KEY_NUM3 + " " + (keyState & KEY_NUM3) + " ");
         if ((keyState & DOWN_PRESSED) != 0) {
             move(DOWN);
         } else if ((keyState & UP_PRESSED) != 0) {
@@ -99,14 +109,28 @@ public class MainGame extends GameCanvas implements Runnable {
             move(LEFT);
         } else if ((keyState & RIGHT_PRESSED) != 0) {
             move(RIGHT);
-        } else {
-            character.setFrame(0);
+        } else if (keyState  == 1024) {
+            System.out.println("Reset");
+            cenarioAtual = Cenario.getCenario(cenarioIndexAtual);
+            initCenario(cenarioAtual);
         }
+
+
     }
 
     private void updateGameScreen(Cenario cenario, Graphics graphics) {
-
-        cenario.paint(graphics, 30, 30);
+        Graphics gr = getGraphics();
+        gr.setColor(0, 0, 0);
+        gr.fillRect(0, 0, getWidth(), getHeight());
+        
+        int width = cenario.cols * cenario.pixelSize;
+        int height = cenario.rows * cenario.pixelSize;
+        
+        int x = getWidth() / 2  - (width/2 );
+        int y = getHeight() / 2  - (height/2 );
+        System.out.println(getHeight() + " " + height);
+        
+        cenario.paint(graphics, x, y);
         flushGraphics();
 
     }
@@ -120,7 +144,7 @@ public class MainGame extends GameCanvas implements Runnable {
     private void move(int moveType) {
         if (CURRENT_DIRECTION == moveType) {
             character.nextFrame();
-        } else { 
+        } else {
             CURRENT_DIRECTION = moveType;
             changeCharacterSequence(moveType);
             character.setFrame(0);
@@ -276,6 +300,23 @@ public class MainGame extends GameCanvas implements Runnable {
             case RIGHT:
                 sprite.move(-VELOCIDADE, 0);
                 break;
+        }
+    }
+
+    private void showGraphicsState(String texto) {
+
+        Graphics gr = getGraphics();
+        gr.setColor(0, 0, 0);
+        gr.fillRect(0, 0, getWidth(), getHeight());
+
+        gr.setColor(125, 125, 125);
+        gr.drawString(texto, (getWidth() /2 - (texto.length()*4)), getHeight() / 2, 0);
+
+        flushGraphics();
+        try {
+            Thread.sleep(1500l);
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
         }
     }
 }

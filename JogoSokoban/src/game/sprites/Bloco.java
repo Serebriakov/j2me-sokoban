@@ -14,22 +14,17 @@ public class Bloco extends Sprite {
 
     private boolean marcado = false;
     private int[] sequence = {4, 5};
-    
-    private int row;
-    private int col;
+    private int pixelSize;
 
-    public Bloco(Image image, int row, int col) {
-        super(image, 16, 16);
+    public Bloco(Image image, int row, int col, int pixelSize) {
+        super(image, pixelSize, pixelSize);
+        this.pixelSize = pixelSize;
 
-        this.row = row;
-        this.col = col;
         setVisible(true);
         setFrameSequence(sequence);
         setRefPixelPosition(getWidth() / 2, getHeight() / 2);
-        setPosition(col * 16, row * 16);
+        setPosition(col * pixelSize, row * pixelSize);
     }
-
-    
 
     public boolean shouldMoveBy(Sprite other, int direction) {
 
@@ -71,7 +66,7 @@ public class Bloco extends Sprite {
     public boolean in(WinSpot[] winSpot) {
         for (int i = 0; i < winSpot.length; i++) {
             if ((winSpot[i].getX() == (getX()))
-                    && (winSpot[i].getY()  == (getY()))) {
+                    && (winSpot[i].getY() == (getY()))) {
 
                 return true;
             }

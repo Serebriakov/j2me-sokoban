@@ -17,11 +17,12 @@ public class CharacterSprite extends Sprite {
     int[] downPersonagem = {16, 17, 18, 19, 20};
     int[] upPersonagem = {32, 33, 34, 35, 36};
 
-    public CharacterSprite(Image imagem,  int row, int col) {
-        super(imagem, 16, 16);
+    public CharacterSprite(Image imagem, int row, int col, int pixelSize) {
+        super(imagem, pixelSize, pixelSize);
         setFrameSequence(downPersonagem);
-        setRefPixelPosition(getWidth()/2, getHeight()/2);
-        setPosition(col*16, row*16);
+        setRefPixelPosition(getWidth() / 2, getHeight() / 2);
+        
+        setPosition(col * pixelSize, row * pixelSize);
         setVisible(true);
         direction = GameCanvas.DOWN;
     }
@@ -33,7 +34,7 @@ public class CharacterSprite extends Sprite {
     public void down() {
         setFrameSequence(downPersonagem);
         direction = GameCanvas.DOWN;
-        
+
     }
 
     public void up() {
@@ -44,12 +45,11 @@ public class CharacterSprite extends Sprite {
     public void left() {
         setFrameSequence(leftPersonagem);
         direction = GameCanvas.LEFT;
-        
+
     }
 
     public void right() {
         setFrameSequence(rightPersonagem);
         direction = GameCanvas.RIGHT;
     }
-
 }

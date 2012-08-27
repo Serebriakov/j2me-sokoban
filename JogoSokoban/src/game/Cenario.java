@@ -3,7 +3,6 @@ package game;
 import game.sprites.Bloco;
 import game.sprites.CharacterSprite;
 import game.sprites.WinSpot;
-import game.util.Point;
 import javax.microedition.lcdui.Image;
 import javax.microedition.lcdui.game.LayerManager;
 import javax.microedition.lcdui.game.TiledLayer;
@@ -21,6 +20,9 @@ public class Cenario extends LayerManager {
     public static int BLOCK = 4;
     public static int WIN_SPOT = 3;
     public static int CHARACTER_POSITION = 5;
+    public int pixelSize;
+    public int cols;
+    public int rows;
     private Bloco[] blocks;
     WinSpot[] winSpots;
     private CharacterSprite character;
@@ -29,14 +31,19 @@ public class Cenario extends LayerManager {
             WinSpot[] winSpots,
             CharacterSprite character,
             TiledLayer wall,
-            TiledLayer ground) {
+            TiledLayer ground,
+            int row,
+            int col,
+            int pixelSize) {
         this.blocks = blocos;
         this.winSpots = winSpots;
         this.ground = ground;
         this.wall = wall;
         this.character = character;
 
-
+        this.rows = row;
+        this.cols = col;
+        this.pixelSize = pixelSize;
 
         if (character != null) {
             append(character);
@@ -69,7 +76,7 @@ public class Cenario extends LayerManager {
                 {1, 2, 1, 2, 2, 4, 3, 1},
                 {1, 2, 4, 2, 2, 2, 3, 1},
                 {1, 1, 1, 1, 1, 1, 1, 1},};
-            return getCenario(sprite, 8, 8, fase, 3);
+            return getCenario(sprite, 8, 8, fase, 3, 16);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -89,12 +96,13 @@ public class Cenario extends LayerManager {
                 {1, 2, 2, 1, 2, 2, 2, 1, 1},
                 {1, 1, 1, 1, 2, 2, 2, 1, 1},
                 {1, 1, 1, 1, 1, 1, 1, 1, 1},};
-            return getCenario(sprite, 9, 9, fase, 3);
+            return getCenario(sprite, 9, 9, fase, 3, 16);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
+
     public static Cenario getCenario3() {
         try {
             Image sprite = Image.createImage("/game/images/sprites.png");
@@ -106,14 +114,14 @@ public class Cenario extends LayerManager {
                 {1, 2, 2, 2, 1, 4, 1, 2, 1},
                 {1, 2, 4, 2, 1, 2, 2, 2, 1},
                 {1, 2, 2, 2, 1, 1, 1, 1, 1},
-                {1, 1, 1, 1, 1, 0, 0, 0, 0}, };
-            return getCenario(sprite, 9, 8, fase, 3);
+                {1, 1, 1, 1, 1, 0, 0, 0, 0},};
+            return getCenario(sprite, 9, 8, fase, 3, 16);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
-    
+
     public static Cenario getCenario4() {
         try {
             Image sprite = Image.createImage("/game/images/sprites.png");
@@ -125,20 +133,40 @@ public class Cenario extends LayerManager {
                 {1, 2, 2, 3, 2, 3, 4, 2, 1},
                 {1, 2, 4, 1, 4, 1, 1, 1, 1},
                 {1, 2, 2, 3, 2, 3, 1, 0, 0},
-                {1, 1, 1, 1, 1, 1, 1, 0, 0}, };
-            return getCenario(sprite, 9, 8, fase, 7);
+                {1, 1, 1, 1, 1, 1, 1, 0, 0},};
+            return getCenario(sprite, 9, 8, fase, 7, 16);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
-    
 
-    private static Cenario getCenario(Image sprite, int cols, int rows, int[][] fase, int blocksCount) {
+    public static Cenario getCenario(int index) {
 
-        TiledLayer wall = new TiledLayer(cols, rows, sprite, 16, 16);
+        switch (index) {
+            case (0):
+                return getCenario1();
+            case (1):
+                return getCenario2();
+            case (2):
+                return getCenario3();
+            case (3):
+                return getCenario4();
+            default:
+                return getCenario1();
+        }
+    }
+
+    private static Cenario getCenario(Image sprite,
+            int cols,
+            int rows,
+            int[][] fase,
+            int blocksCount,
+            int pixelSize) {
+
+        TiledLayer wall = new TiledLayer(cols, rows, sprite, pixelSize, pixelSize);
         wall.setVisible(true);
-        TiledLayer ground = new TiledLayer(cols, rows, sprite, 16, 16);
+        TiledLayer ground = new TiledLayer(cols, rows, sprite, pixelSize, pixelSize);
         ground.setVisible(true);
         CharacterSprite character = null;
 
@@ -162,21 +190,29 @@ public class Cenario extends LayerManager {
 
 
                     if (fase[i][j] == BLOCK) {
-                        blocos[countBlock] = new Bloco(sprite, i, j);
+                        blocos[countBlock] = new Bloco(sprite, i, j, pixelSize);
                         countBlock++;
                     }
                     if (fase[i][j] == CHARACTER_POSITION) {
-                        character = new CharacterSprite(sprite, i, j);
+                        character = new CharacterSprite(sprite, i, j, pixelSize);
                     }
                     if (fase[i][j] == WIN_SPOT) {
-                        winSpots[countWinSpot] = new WinSpot(sprite, i, j);
+                        winSpots[countWinSpot] = new WinSpot(sprite, i, j, pixelSize);
                         countWinSpot++;
                     }
                 }
 
             }
         }
-        Cenario cenario = new Cenario(blocos, winSpots, character, wall, ground);
+        Cenario cenario = new Cenario(
+                blocos,
+                winSpots,
+                character, 
+                wall, 
+                ground,
+                rows,
+                cols,
+                pixelSize);
         return cenario;
     }
 
@@ -205,11 +241,11 @@ public class Cenario extends LayerManager {
     }
 
     public boolean isCompleted() {
-         int count = 0;
-        for ( int i = 0 ; i < blocks.length; i++ ) {
-            
-            if ( blocks[i].getFrame() == 1 ) {
-                count ++;
+        int count = 0;
+        for (int i = 0; i < blocks.length; i++) {
+
+            if (blocks[i].getFrame() == 1) {
+                count++;
             }
         }
         return count == blocks.length;
