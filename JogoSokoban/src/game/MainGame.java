@@ -1,11 +1,10 @@
 package game;
 
-import game.GameDesign.Posicao;
 import game.sprites.Bloco;
-import java.io.IOException;
+import game.sprites.CharacterSprite;
+import game.sprites.WinSpot;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.game.GameCanvas;
-import javax.microedition.lcdui.game.LayerManager;
 import javax.microedition.lcdui.game.Sprite;
 import javax.microedition.lcdui.game.TiledLayer;
 
@@ -15,93 +14,78 @@ import javax.microedition.lcdui.game.TiledLayer;
  */
 public class MainGame extends GameCanvas implements Runnable {
 
-    private Sprite character;
+    private CharacterSprite character;
     private TiledLayer wall;
-    private GameDesign gameDesign;
     private int CURRENT_DIRECTION;
-    private int VELOCIDADE = 2;
-    private LayerManager layerManager;
-    private Bloco[] blocos = new Bloco[4];
-    private TiledLayer background;
+    private int VELOCIDADE = 16;
+    private Bloco[] blocos;
+    private WinSpot[] winSpot;
     private int count = 0;
+    private Cenario[] cenarios;
 
     public MainGame() {
         super(false);
-        gameDesign = new GameDesign();
-        try {
-            wall = gameDesign.getBlocks();
-            character = gameDesign.getCharacterDown();
-            background = gameDesign.getBackground();
+        cenarios = new Cenario[4];
+        cenarios[0] = Cenario.getCenario1();
+        cenarios[1] = Cenario.getCenario2();
+        cenarios[2] = Cenario.getCenario3();
+        cenarios[3] = Cenario.getCenario4();
 
+    }
 
-            layerManager = new LayerManager();
+    public void initCenario(Cenario cenario) {
 
-            gameDesign.updateLayerManagerForTeste(layerManager);
-
-            for (int i = 0; i < gameDesign.posicaoBloco.length; i++) {
-                blocos[i] = new Bloco(gameDesign.getBlocoAzul(),0,0);
-
-                blocos[i].setVisible(true);
-                blocos[i].setPosition(gameDesign.posicaoBloco[i].x * 16, gameDesign.posicaoBloco[i].y * 16);
-                layerManager.insert(blocos[i], 2);
-
-
-            }
-            CURRENT_DIRECTION = DOWN;
-
-
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-
-
+        wall = cenario.getWall();
+        character = cenario.getCharacter();
+        blocos = cenario.getBlocks();
+        winSpot = cenario.getWinSpots();
+        CURRENT_DIRECTION = character.getDirection();
     }
 
     public void run() {
 
+        for (int i = 0; i < cenarios.length; i++) {
+            Cenario cenario = cenarios[i];
+            initCenario(cenario);
 
-        while (count != 4) {
-            try {
-                verifyGameState();
+            while (!cenario.isCompleted()) {
+                try {
+                    verifyGameState();
+//
+                    checkUserInput();
 
-                checkUserInput();
+                    updateGameScreen(cenario, getGraphics());
 
-                updateGameScreen(getGraphics());
-
-                System.out.println(count);
-                Thread.currentThread().sleep(10);
-            } catch (Exception e) {
-                e.printStackTrace();
+                    Thread.currentThread().sleep(100);
+                    System.out.println(count);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
-
         }
+
     }
 
     public void start() {
-        // do initialization
-
-        // and then start a thread
         Thread runner = new Thread(this);
         runner.start();
     }
 
     private void verifyGameState() {
-        Posicao[] posicoes = gameDesign.posicaoWin;
+
         count = 0;
-        for (int j = 0; j < blocos.length; j++) {
-            Bloco bloco = blocos[j];
-            if (bloco.in(posicoes)) {
+        for (int i = 0; i < winSpot.length; i++) {
+            Bloco bloco = blocos[i];
+            if (bloco.in(winSpot)) {
                 bloco.setFrame(1);
-                
+
             } else {
                 bloco.setFrame(0);
-             
             }
-            
-            
-            if ( bloco.getFrame() == 1) {
+
+            if (bloco.getFrame() == 1) {
                 count++;
-            } 
+            }
         }
     }
 
@@ -120,9 +104,9 @@ public class MainGame extends GameCanvas implements Runnable {
         }
     }
 
-    private void updateGameScreen(Graphics graphics) {
+    private void updateGameScreen(Cenario cenario, Graphics graphics) {
 
-        layerManager.paint(graphics, 0, 0);
+        cenario.paint(graphics, 30, 30);
         flushGraphics();
 
     }
@@ -159,8 +143,7 @@ public class MainGame extends GameCanvas implements Runnable {
         for (int i = 0; i < blocos.length; i++) {
             Bloco bloco = blocos[i];
             if (bloco != null
-                    && character.collidesWith(bloco, true)
-                    && bloco.shouldMoveBy(character, nextMove)) {
+                    && character.collidesWith(bloco, false)) {
                 switch (nextMove) {
                     case DOWN:
                         moveToDown(bloco);
@@ -221,7 +204,7 @@ public class MainGame extends GameCanvas implements Runnable {
         for (int i = 0; i < blocos.length; i++) {
             if (blocos[i] != null
                     && i != position
-                    && bloco.collidesWith(blocos[i], true)) {
+                    && bloco.collidesWith(blocos[i], false)) {
                 return true;
             }
         }
@@ -264,16 +247,17 @@ public class MainGame extends GameCanvas implements Runnable {
     private void changeCharacterSequence(int moveType) {
         switch (moveType) {
             case DOWN:
-                character.setFrameSequence(gameDesign.CharacterDownseq001);
+                character.down();
                 break;
             case UP:
-                character.setFrameSequence(gameDesign.CharacterUpseq001);
+                character.up();
                 break;
             case LEFT:
-                character.setFrameSequence(gameDesign.Characterseq001);
+                character.left();
                 break;
             case RIGHT:
-                character.setFrameSequence(gameDesign.CharacterRightseq001);
+                character.right();
+
                 break;
         }
     }
@@ -294,81 +278,4 @@ public class MainGame extends GameCanvas implements Runnable {
                 break;
         }
     }
-
-    //<editor-fold defaultstate="collapsed" desc="moves">
-    private void moveToDown() {
-        int moveType = DOWN;
-        if (CURRENT_DIRECTION == moveType) {
-            character.nextFrame();
-        } else {
-            CURRENT_DIRECTION = moveType;
-            character.setFrameSequence(gameDesign.CharacterDownseq001);
-            character.setFrame(0);
-        }
-        moveToDown(character);
-        if (colides(character, wall)) {
-            moveToUp(character);
-        } else {
-            checkColidesBloco(moveType);
-
-        }
-    }
-
-    private void moveToLeft() {
-        int moveType = LEFT;
-        if (CURRENT_DIRECTION == moveType) {
-            character.nextFrame();
-        } else {
-            CURRENT_DIRECTION = moveType;
-            character.setFrameSequence(gameDesign.Characterseq001);
-            character.setFrame(0);
-        }
-        moveToLeft(character);
-        if (colides(character, wall)) {
-
-            moveToRight(character);
-        } else {
-            checkColidesBloco(moveType);
-
-        }
-    }
-
-    private void moveToRight() {
-        int moveType = RIGHT;
-        if (CURRENT_DIRECTION == moveType) {
-            character.nextFrame();
-        } else {
-            CURRENT_DIRECTION = moveType;
-            character.setFrameSequence(gameDesign.CharacterRightseq001);
-            character.setFrame(0);
-        }
-
-        moveToRight(character);
-        if (colides(character, wall)) {
-            moveToLeft(character);
-        } else {
-            checkColidesBloco(moveType);
-        }
-    }
-
-    private void moveToUp() {
-        int moveType = UP;
-        if (CURRENT_DIRECTION == moveType) {
-            character.nextFrame();
-        } else {
-            CURRENT_DIRECTION = moveType;
-            character.setFrameSequence(gameDesign.CharacterUpseq001);
-            character.setFrame(0);
-        }
-
-
-        moveToUp(character);
-        if (colides(character, wall)) {
-            moveToDown(character);
-        } else {
-            checkColidesBloco(moveType);
-
-        }
-    }
-//</editor-fold>
 }
