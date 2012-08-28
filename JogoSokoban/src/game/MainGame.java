@@ -1,9 +1,11 @@
 package game;
 
+import core.MainMIDlet;
 import game.sprites.Bloco;
 import game.sprites.CharacterSprite;
 import game.sprites.WinSpot;
-import javax.microedition.lcdui.Canvas;
+import java.util.Timer;
+import javax.microedition.lcdui.Display;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.game.GameCanvas;
 import javax.microedition.lcdui.game.Sprite;
@@ -19,67 +21,97 @@ public class MainGame extends GameCanvas implements Runnable {
     private TiledLayer wall;
     private int CURRENT_DIRECTION;
     private int VELOCIDADE = 16;
+    private int cenarioIndexAtual;
+    private int x;
+    private int y;
+    private int maxSpot;
+    private int winnedSpot;
     private Bloco[] blocos;
     private WinSpot[] winSpot;
-    private int count = 0;
-    private Cenario[] cenarios;
-    private int cenarioIndexAtual;
     private Cenario cenarioAtual;
+    private Clock clock;
+    private Timer timer;
+    private Thread runner;
+    private MainMIDlet midlet;
 
-    public MainGame() {
+    public MainGame(MainMIDlet midlet) {
         super(false);
-        cenarios = new Cenario[4];
-        cenarios[0] = Cenario.getCenario(0);
-        cenarios[1] = Cenario.getCenario(1);
-        cenarios[2] = Cenario.getCenario(2);
-        cenarios[3] = Cenario.getCenario(3);
+
+        this.midlet = midlet;
+
     }
 
+    /**
+     * Executa o game
+     */
+    public void run() {
+        int cenariosCount = 1;
+
+        for (int i = 0; i < cenariosCount; i++) {
+            cenarioIndexAtual = i;
+            cenarioAtual = Cenario.getCenario(i);
+            initCenario(cenarioAtual);
+
+            showTextoCentro("Cenário " + (cenarioIndexAtual + 1));
+            while (!cenarioAtual.isCompleted()) {
+                try {
+                    verifyGameState();
+                    checkUserInput();
+                    updateGameScreen(getGraphics());
+
+                    Thread.currentThread().sleep(100);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        showTextoCentro("Fim do jogo");
+    }
+
+    /**
+     * Inicia o cenario para o game
+     *
+     * @param cenario
+     */
     public void initCenario(Cenario cenario) {
 
         wall = cenario.getWall();
         character = cenario.getCharacter();
         blocos = cenario.getBlocks();
         winSpot = cenario.getWinSpots();
+        maxSpot = winSpot.length;
+        winnedSpot = 0;
         CURRENT_DIRECTION = character.getDirection();
-    }
+        int width = cenario.cols * cenario.pixelSize;
+        int height = cenario.rows * cenario.pixelSize;
 
-    public void run() {
+        x = getWidth() / 2 - (width / 2);
+        y = getHeight() / 2 - (height / 2);
+        clock = new Clock(30);
 
-        for (int i = 0; i < cenarios.length; i++) {
-            cenarioIndexAtual = i;
-            cenarioAtual = cenarios[i];
-            initCenario(cenarioAtual);
 
-            showGraphicsState("Stage " + i);
-
-            while (!cenarioAtual.isCompleted()) {
-                try {
-                    verifyGameState();
-//
-                    checkUserInput();
-
-                    updateGameScreen(cenarioAtual, getGraphics());
-
-                    Thread.currentThread().sleep(100);
-                    System.out.println(count);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
         }
-        showGraphicsState("Fim do jogo");
-
+        clock = new Clock(cenario.timeout);
+        timer = new Timer();
+        timer.scheduleAtFixedRate(clock, 0, 1000);
     }
 
+    /**
+     *
+     */
     public void start() {
-        Thread runner = new Thread(this);
+        runner = new Thread(this);
         runner.start();
+
     }
 
+    //<editor-fold defaultstate="collapsed" desc="Verifica Estado do jogo">
     private void verifyGameState() {
+        winnedSpot = 0;
 
-        count = 0;
         for (int i = 0; i < winSpot.length; i++) {
             Bloco bloco = blocos[i];
             if (bloco.in(winSpot)) {
@@ -90,17 +122,20 @@ public class MainGame extends GameCanvas implements Runnable {
             }
 
             if (bloco.getFrame() == 1) {
-                count++;
+                winnedSpot++;
             }
         }
-    }
 
+    }
+    //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="Verifica Entradas">
     private void checkUserInput() throws Exception {
 
 
         int keyState = getKeyStates();
 
-        System.out.println(keyState + " " + KEY_NUM3 + " " + (keyState & KEY_NUM3) + " ");
+
         if ((keyState & DOWN_PRESSED) != 0) {
             move(DOWN);
         } else if ((keyState & UP_PRESSED) != 0) {
@@ -109,29 +144,12 @@ public class MainGame extends GameCanvas implements Runnable {
             move(LEFT);
         } else if ((keyState & RIGHT_PRESSED) != 0) {
             move(RIGHT);
-        } else if (keyState  == 1024) {
-            System.out.println("Reset");
+        } else if (keyState == 1024) {
             cenarioAtual = Cenario.getCenario(cenarioIndexAtual);
             initCenario(cenarioAtual);
+            showTextoCentro("Cenário " + (cenarioIndexAtual + 1));
         }
 
-
-    }
-
-    private void updateGameScreen(Cenario cenario, Graphics graphics) {
-        Graphics gr = getGraphics();
-        gr.setColor(0, 0, 0);
-        gr.fillRect(0, 0, getWidth(), getHeight());
-        
-        int width = cenario.cols * cenario.pixelSize;
-        int height = cenario.rows * cenario.pixelSize;
-        
-        int x = getWidth() / 2  - (width/2 );
-        int y = getHeight() / 2  - (height/2 );
-        System.out.println(getHeight() + " " + height);
-        
-        cenario.paint(graphics, x, y);
-        flushGraphics();
 
     }
 
@@ -302,21 +320,69 @@ public class MainGame extends GameCanvas implements Runnable {
                 break;
         }
     }
+    //</editor-fold>
 
-    private void showGraphicsState(String texto) {
+    //<editor-fold defaultstate="collapsed" desc="Atualiza Visao">
+    private void updateGameScreen(Graphics graphics) {
+        Graphics gr = getGraphics();
+        gr.setColor(0, 0, 0);
+        gr.fillRect(0, 0, getWidth(), getHeight());
 
+        showTimeLeft(gr);
+        showCommands(gr);
+
+        cenarioAtual.paint(graphics, x, y);
+
+        flushGraphics();
+
+
+    }
+
+    private void showTextoCentro(String texto) {
         Graphics gr = getGraphics();
         gr.setColor(0, 0, 0);
         gr.fillRect(0, 0, getWidth(), getHeight());
 
         gr.setColor(125, 125, 125);
-        gr.drawString(texto, (getWidth() /2 - (texto.length()*4)), getHeight() / 2, 0);
+        gr.drawString(texto, (getWidth() / 2 - (texto.length() * 4)), getHeight() / 2, 0);
 
         flushGraphics();
         try {
-            Thread.sleep(1500l);
+            Thread.currentThread().sleep(1500l);
         } catch (InterruptedException ex) {
             ex.printStackTrace();
         }
     }
+
+    private void showCommands(Graphics gr) {
+        gr.setColor(0xffffff);
+        String valor = "Blocos " + winnedSpot + "/" + maxSpot;
+        gr.drawString(valor, 0, getHeight() - 20, 0);
+
+    }
+
+    private void showTimeLeft(Graphics g) {
+
+        // what does the clock say
+        int timeLeft = clock.getTimeLeft();
+
+        // if less than 6 seconds left
+        // flicker time with red and black
+        if (timeLeft < 10) {
+            if ((timeLeft % 2) == 0) {
+                g.setColor(0xff0000);
+            } else {
+                g.setColor(0xffffff);
+            }
+        } else {
+            g.setColor(0xffffff);
+        }
+
+        g.drawString("Tempo: " + timeLeft + "s", 0, 0, 0);
+
+        // reset the color
+        g.setColor(0x000000);
+
+    }
+    //</editor-fold>
 }

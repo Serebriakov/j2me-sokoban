@@ -26,6 +26,9 @@ public class Cenario extends LayerManager {
     private Bloco[] blocks;
     WinSpot[] winSpots;
     private CharacterSprite character;
+    
+    
+    public int timeout;
 
     private Cenario(Bloco[] blocos,
             WinSpot[] winSpots,
@@ -34,7 +37,8 @@ public class Cenario extends LayerManager {
             TiledLayer ground,
             int row,
             int col,
-            int pixelSize) {
+            int pixelSize,
+            int timeout) {
         this.blocks = blocos;
         this.winSpots = winSpots;
         this.ground = ground;
@@ -44,6 +48,7 @@ public class Cenario extends LayerManager {
         this.rows = row;
         this.cols = col;
         this.pixelSize = pixelSize;
+        this.timeout = timeout;
 
         if (character != null) {
             append(character);
@@ -76,7 +81,7 @@ public class Cenario extends LayerManager {
                 {1, 2, 1, 2, 2, 4, 3, 1},
                 {1, 2, 4, 2, 2, 2, 3, 1},
                 {1, 1, 1, 1, 1, 1, 1, 1},};
-            return getCenario(sprite, 8, 8, fase, 3, 16);
+            return getCenario(sprite, 8, 8, fase, 3, 16,90);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -96,7 +101,7 @@ public class Cenario extends LayerManager {
                 {1, 2, 2, 1, 2, 2, 2, 1, 1},
                 {1, 1, 1, 1, 2, 2, 2, 1, 1},
                 {1, 1, 1, 1, 1, 1, 1, 1, 1},};
-            return getCenario(sprite, 9, 9, fase, 3, 16);
+            return getCenario(sprite, 9, 9, fase, 3, 16,180);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -115,7 +120,7 @@ public class Cenario extends LayerManager {
                 {1, 2, 4, 2, 1, 2, 2, 2, 1},
                 {1, 2, 2, 2, 1, 1, 1, 1, 1},
                 {1, 1, 1, 1, 1, 0, 0, 0, 0},};
-            return getCenario(sprite, 9, 8, fase, 3, 16);
+            return getCenario(sprite, 9, 8, fase, 3, 16,180);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -134,7 +139,7 @@ public class Cenario extends LayerManager {
                 {1, 2, 4, 1, 4, 1, 1, 1, 1},
                 {1, 2, 2, 3, 2, 3, 1, 0, 0},
                 {1, 1, 1, 1, 1, 1, 1, 0, 0},};
-            return getCenario(sprite, 9, 8, fase, 7, 16);
+            return getCenario(sprite, 9, 8, fase, 7, 16,360);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -162,7 +167,8 @@ public class Cenario extends LayerManager {
             int rows,
             int[][] fase,
             int blocksCount,
-            int pixelSize) {
+            int pixelSize,
+            int timeout) {
 
         TiledLayer wall = new TiledLayer(cols, rows, sprite, pixelSize, pixelSize);
         wall.setVisible(true);
@@ -212,7 +218,8 @@ public class Cenario extends LayerManager {
                 ground,
                 rows,
                 cols,
-                pixelSize);
+                pixelSize,
+                timeout);
         return cenario;
     }
 

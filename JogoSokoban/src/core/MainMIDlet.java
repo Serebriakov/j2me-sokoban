@@ -5,6 +5,7 @@
 package core;
 
 import game.MainGame;
+import game.MenuGame;
 import javax.microedition.midlet.*;
 import javax.microedition.lcdui.*;
 import org.netbeans.microedition.lcdui.SplashScreen;
@@ -16,14 +17,12 @@ public class MainMIDlet extends MIDlet implements CommandListener {
 
     private boolean midletPaused = false;
 //<editor-fold defaultstate="collapsed" desc=" Generated Fields ">//GEN-BEGIN:|fields|0|
+    private Command okCommand2;
+    private Command okCommand1;
+    private Command backCommand;
     private Command exitCommand;
     private Command okCommand;
-    private Command okCommand1;
-    private Command okCommand2;
-    private Command backCommand;
     private SplashScreen splashScreen;
-    private Form optionForm;
-    private List list;
 //</editor-fold>//GEN-END:|fields|0|
 
     /**
@@ -53,7 +52,7 @@ public class MainMIDlet extends MIDlet implements CommandListener {
      */
     public void startMIDlet() {//GEN-END:|3-startMIDlet|0|3-preAction
         // write pre-action user code here
-        switchDisplayable(null, getList());//GEN-LINE:|3-startMIDlet|1|3-postAction
+        goMenuGame();//GEN-LINE:|3-startMIDlet|1|3-postAction
         // write post-action user code here
     }//GEN-BEGIN:|3-startMIDlet|2|
 //</editor-fold>//GEN-END:|3-startMIDlet|2|
@@ -103,35 +102,17 @@ public class MainMIDlet extends MIDlet implements CommandListener {
      */
     public void commandAction(Command command, Displayable displayable) {//GEN-END:|7-commandAction|0|7-preCommandAction
         // write pre-action user code here
-        if (displayable == list) {//GEN-BEGIN:|7-commandAction|1|68-preAction
-            if (command == List.SELECT_COMMAND) {//GEN-END:|7-commandAction|1|68-preAction
+        if (displayable == splashScreen) {//GEN-BEGIN:|7-commandAction|1|24-preAction
+            if (command == SplashScreen.DISMISS_COMMAND) {//GEN-END:|7-commandAction|1|24-preAction
                 // write pre-action user code here
-                listAction();//GEN-LINE:|7-commandAction|2|68-postAction
+//GEN-LINE:|7-commandAction|2|24-postAction
                 // write post-action user code here
-            } else if (command == okCommand1) {//GEN-LINE:|7-commandAction|3|76-preAction
-                // write pre-action user code hereasdf
-
-
-
-                method();//GEN-LINE:|7-commandAction|4|76-postAction
-                // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|5|86-preAction
-        } else if (displayable == optionForm) {
-            if (command == backCommand) {//GEN-END:|7-commandAction|5|86-preAction
-                // write pre-action user code here
-                switchDisplayable(null, getList());//GEN-LINE:|7-commandAction|6|86-postAction
-                // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|7|24-preAction
-        } else if (displayable == splashScreen) {
-            if (command == SplashScreen.DISMISS_COMMAND) {//GEN-END:|7-commandAction|7|24-preAction
-                // write pre-action user code here
-//GEN-LINE:|7-commandAction|8|24-postAction
-                // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|9|7-postCommandAction
-        }//GEN-END:|7-commandAction|9|7-postCommandAction
+            }//GEN-BEGIN:|7-commandAction|3|7-postCommandAction
+        }//GEN-END:|7-commandAction|3|7-postCommandAction
         // write post-action user code here
-    }//GEN-BEGIN:|7-commandAction|10|
-//</editor-fold>//GEN-END:|7-commandAction|10|
+    }//GEN-BEGIN:|7-commandAction|4|
+//</editor-fold>//GEN-END:|7-commandAction|4|
+
 
 //<editor-fold defaultstate="collapsed" desc=" Generated Getter: exitCommand ">//GEN-BEGIN:|18-getter|0|18-preInit
     /**
@@ -184,67 +165,11 @@ public class MainMIDlet extends MIDlet implements CommandListener {
     }
 //</editor-fold>//GEN-END:|45-getter|2|
 
-//<editor-fold defaultstate="collapsed" desc=" Generated Getter: optionForm ">//GEN-BEGIN:|56-getter|0|56-preInit
-    /**
-     * Returns an initialized instance of optionForm component.
-     *
-     * @return the initialized component instance
-     */
-    public Form getOptionForm() {
-        if (optionForm == null) {//GEN-END:|56-getter|0|56-preInit
-            // write pre-init user code here
-            optionForm = new Form("Option");//GEN-BEGIN:|56-getter|1|56-postInit
-            optionForm.addCommand(getBackCommand());
-            optionForm.setCommandListener(this);//GEN-END:|56-getter|1|56-postInit
-            // write post-init user code here
-        }//GEN-BEGIN:|56-getter|2|
-        return optionForm;
-    }
-//</editor-fold>//GEN-END:|56-getter|2|
 
-//<editor-fold defaultstate="collapsed" desc=" Generated Getter: list ">//GEN-BEGIN:|67-getter|0|67-preInit
-    /**
-     * Returns an initialized instance of list component.
-     *
-     * @return the initialized component instance
-     */
-    public List getList() {
-        if (list == null) {//GEN-END:|67-getter|0|67-preInit
-            // write pre-init user code here
-            list = new List("Menu", Choice.IMPLICIT);//GEN-BEGIN:|67-getter|1|67-postInit
-            list.append("List Element 1", null);
-            list.append("List Element 2", null);
-            list.addCommand(getOkCommand1());
-            list.setCommandListener(this);
-            list.setSelectedFlags(new boolean[]{false, false});//GEN-END:|67-getter|1|67-postInit
-            // write post-init user code here
-        }//GEN-BEGIN:|67-getter|2|
-        return list;
-    }
-//</editor-fold>//GEN-END:|67-getter|2|
 
-//<editor-fold defaultstate="collapsed" desc=" Generated Method: listAction ">//GEN-BEGIN:|67-action|0|67-preAction
-    /**
-     * Performs an action assigned to the selected list element in the list
-     * component.
-     */
-    public void listAction() {//GEN-END:|67-action|0|67-preAction
-        // enter pre-action user code here
-        String __selectedString = getList().getString(getList().getSelectedIndex());//GEN-BEGIN:|67-action|1|70-preAction
-        if (__selectedString != null) {
-            if (__selectedString.equals("List Element 1")) {//GEN-END:|67-action|1|70-preAction
-                // write pre-action user code here
-                startGame();//GEN-LINE:|67-action|2|70-postAction
-                // write post-action user code here
-            } else if (__selectedString.equals("List Element 2")) {//GEN-LINE:|67-action|3|71-preAction
-                // write pre-action user code here
-                switchDisplayable(null, getOptionForm());//GEN-LINE:|67-action|4|71-postAction
-                // write post-action user code here
-            }//GEN-BEGIN:|67-action|5|67-postAction
-        }//GEN-END:|67-action|5|67-postAction
-        // enter post-action user code here
-    }//GEN-BEGIN:|67-action|6|
-//</editor-fold>//GEN-END:|67-action|6|
+
+
+
 
 //<editor-fold defaultstate="collapsed" desc=" Generated Getter: okCommand1 ">//GEN-BEGIN:|75-getter|0|75-preInit
     /**
@@ -278,29 +203,7 @@ public class MainMIDlet extends MIDlet implements CommandListener {
     }
 //</editor-fold>//GEN-END:|77-getter|2|
 
-//<editor-fold defaultstate="collapsed" desc=" Generated Method: method ">//GEN-BEGIN:|80-switch|0|80-preSwitch
-    /**
-     * Performs an action assigned to the method switch-point.
-     */
-    public void method() {//GEN-END:|80-switch|0|80-preSwitch
-        int menuIndex = getList().getSelectedIndex() + 1;
 
-
-        switch (menuIndex) {//GEN-BEGIN:|80-switch|1|81-preAction
-            case 1://GEN-END:|80-switch|1|81-preAction
-                // write pre-action user code here
-                startGame();//GEN-LINE:|80-switch|2|81-postAction
-                // write post-action user code here
-                break;//GEN-BEGIN:|80-switch|3|82-preAction
-            case 2://GEN-END:|80-switch|3|82-preAction
-                // write pre-action user code here
-                switchDisplayable(null, getOptionForm());//GEN-LINE:|80-switch|4|82-postAction
-                // write post-action user code here
-                break;//GEN-BEGIN:|80-switch|5|80-postSwitch
-        }//GEN-END:|80-switch|5|80-postSwitch
-        // enter post-switch user code here
-    }//GEN-BEGIN:|80-switch|6|
-//</editor-fold>//GEN-END:|80-switch|6|
 
 //<editor-fold defaultstate="collapsed" desc=" Generated Getter: backCommand ">//GEN-BEGIN:|85-getter|0|85-preInit
     /**
@@ -338,7 +241,7 @@ public class MainMIDlet extends MIDlet implements CommandListener {
 
     public void startGame() {
 
-        MainGame mainGame = new MainGame();
+        MainGame mainGame = new MainGame(this);
         mainGame.start();        
         switchDisplayable(null, mainGame);
     }
@@ -371,5 +274,22 @@ public class MainMIDlet extends MIDlet implements CommandListener {
      * terminated and all resources has to be released.
      */
     public void destroyApp(boolean unconditional) {
+    }
+    
+    
+    
+    public void goMenuGame( ) {
+        
+        MenuGame menu = new MenuGame(this);
+        menu.start();
+        Display.getDisplay(this).setCurrent(menu);
+    }
+    
+    
+    public void goMainGame( ) {
+        
+        MainGame game = new MainGame(this);
+        game.start();
+        Display.getDisplay(this).setCurrent(game);
     }
 }
