@@ -46,7 +46,7 @@ public class MainGame extends GameCanvas implements Runnable {
      * Executa o game
      */
     public void run() {
-        int cenariosCount = 1;
+        int cenariosCount = 4;
 
         loop:
         for (int i = 0; i < cenariosCount; i++) {
@@ -69,7 +69,7 @@ public class MainGame extends GameCanvas implements Runnable {
             }
 
             score += (clock.getTimeLeft() > 0 ? clock.getTimeLeft() : 0)*10 + winnedSpot*10 ;
-            if (cenarioAtual.timeout == clock.getTimeLeft()) {
+            if (cenarioAtual.timeout == clock.getTimeLeft() || clock.getTimeLeft() < 0) {
                 break loop;
             } 
 
