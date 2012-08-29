@@ -167,11 +167,11 @@ public class MainGame extends GameCanvas implements Runnable {
         } else if ((keyState & RIGHT_PRESSED) != 0) {
             move(RIGHT);
         }
-//        else if (keyState == 1024) {
-//            cenarioAtual = Cenario.getCenario(cenarioIndexAtual);
-//            initCenario(cenarioAtual);
-//            showTextoCentro("Cenário " + (cenarioIndexAtual + 1));
-//        }
+        else if (keyState == 1024) {
+            cenarioAtual = Cenario.getCenario(cenarioIndexAtual);
+            initCenario(cenarioAtual);
+            showTextoCentro("Cenário " + (cenarioIndexAtual + 1));
+        }
 
 
     }
@@ -381,6 +381,8 @@ public class MainGame extends GameCanvas implements Runnable {
         gr.setColor(0xffffff);
         String valor = "Blocos " + winnedSpot + "/" + maxSpot;
         gr.drawString(valor, 0, getHeight() - 20, 0);
+        valor = "Botão 3: Reset";
+        gr.drawString(valor, 150, getHeight() - 20, 0);
 
     }
 
