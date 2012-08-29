@@ -1,13 +1,13 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package core;
 
 import game.MainGame;
 import game.MenuGame;
+import game.ScoreList;
+import java.util.Calendar;
 import javax.microedition.midlet.*;
 import javax.microedition.lcdui.*;
+import javax.microedition.m2g.SVGImage;
+import javax.microedition.rms.RecordStore;
 import org.netbeans.microedition.lcdui.SplashScreen;
 
 /**
@@ -16,19 +16,28 @@ import org.netbeans.microedition.lcdui.SplashScreen;
 public class MainMIDlet extends MIDlet implements CommandListener {
 
     private boolean midletPaused = false;
+    private static final String NAME_SOKOBAN = "MainSokobanScore";
 //<editor-fold defaultstate="collapsed" desc=" Generated Fields ">//GEN-BEGIN:|fields|0|
-    private Command okCommand2;
-    private Command okCommand1;
-    private Command backCommand;
-    private Command exitCommand;
     private Command okCommand;
+    private Command cancelCommand;
+    private Command backCommand;
+    private Command backCommand1;
     private SplashScreen splashScreen;
+    private Form form;
+    private TextField nome;
+    private StringItem score;
+    private StringItem data;
+    private List list;
+    private Alert alert;
+    private SVGImage svgImage;
 //</editor-fold>//GEN-END:|fields|0|
 
     /**
      * The HelloMIDlet constructor.
      */
     public MainMIDlet() {
+//        try {
+//        RecordStore.deleteRecordStore(NAME_SOKOBAN); } catch (Exception e ) {}
     }
 
 //<editor-fold defaultstate="collapsed" desc=" Generated Methods ">//GEN-BEGIN:|methods|0|
@@ -102,33 +111,36 @@ public class MainMIDlet extends MIDlet implements CommandListener {
      */
     public void commandAction(Command command, Displayable displayable) {//GEN-END:|7-commandAction|0|7-preCommandAction
         // write pre-action user code here
-        if (displayable == splashScreen) {//GEN-BEGIN:|7-commandAction|1|24-preAction
-            if (command == SplashScreen.DISMISS_COMMAND) {//GEN-END:|7-commandAction|1|24-preAction
+        if (displayable == form) {//GEN-BEGIN:|7-commandAction|1|105-preAction
+            if (command == cancelCommand) {//GEN-END:|7-commandAction|1|105-preAction
                 // write pre-action user code here
-//GEN-LINE:|7-commandAction|2|24-postAction
+                goMenuGame();//GEN-LINE:|7-commandAction|2|105-postAction
                 // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|3|7-postCommandAction
-        }//GEN-END:|7-commandAction|3|7-postCommandAction
+            } else if (command == okCommand) {//GEN-LINE:|7-commandAction|3|103-preAction
+                // write pre-action user code here
+                saveScore();//GEN-LINE:|7-commandAction|4|103-postAction
+                // write post-action user code here
+            }//GEN-BEGIN:|7-commandAction|5|116-preAction
+        } else if (displayable == list) {
+            if (command == List.SELECT_COMMAND) {//GEN-END:|7-commandAction|5|116-preAction
+                // write pre-action user code here
+                listAction();//GEN-LINE:|7-commandAction|6|116-postAction
+                // write post-action user code here
+            } else if (command == backCommand1) {//GEN-LINE:|7-commandAction|7|119-preAction
+                // write pre-action user code here
+                goMenuGame();//GEN-LINE:|7-commandAction|8|119-postAction
+                // write post-action user code here
+            }//GEN-BEGIN:|7-commandAction|9|24-preAction
+        } else if (displayable == splashScreen) {
+            if (command == SplashScreen.DISMISS_COMMAND) {//GEN-END:|7-commandAction|9|24-preAction
+                // write pre-action user code here
+//GEN-LINE:|7-commandAction|10|24-postAction
+                // write post-action user code here
+            }//GEN-BEGIN:|7-commandAction|11|7-postCommandAction
+        }//GEN-END:|7-commandAction|11|7-postCommandAction
         // write post-action user code here
-    }//GEN-BEGIN:|7-commandAction|4|
-//</editor-fold>//GEN-END:|7-commandAction|4|
-
-
-//<editor-fold defaultstate="collapsed" desc=" Generated Getter: exitCommand ">//GEN-BEGIN:|18-getter|0|18-preInit
-    /**
-     * Returns an initialized instance of exitCommand component.
-     *
-     * @return the initialized component instance
-     */
-    public Command getExitCommand() {
-        if (exitCommand == null) {//GEN-END:|18-getter|0|18-preInit
-            // write pre-init user code here
-            exitCommand = new Command("Exit", Command.EXIT, 0);//GEN-LINE:|18-getter|1|18-postInit
-            // write post-init user code here
-        }//GEN-BEGIN:|18-getter|2|
-        return exitCommand;
-    }
-//</editor-fold>//GEN-END:|18-getter|2|
+    }//GEN-BEGIN:|7-commandAction|12|
+//</editor-fold>//GEN-END:|7-commandAction|12|
 
 //<editor-fold defaultstate="collapsed" desc=" Generated Getter: splashScreen ">//GEN-BEGIN:|22-getter|0|22-preInit
     /**
@@ -149,77 +161,199 @@ public class MainMIDlet extends MIDlet implements CommandListener {
     }
 //</editor-fold>//GEN-END:|22-getter|2|
 
-//<editor-fold defaultstate="collapsed" desc=" Generated Getter: okCommand ">//GEN-BEGIN:|45-getter|0|45-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: svgImage ">//GEN-BEGIN:|96-getter|0|96-preInit
+    /**
+     * Returns an initialized instance of svgImage component.
+     *
+     * @return the initialized component instance
+     */
+    public SVGImage getSvgImage() {
+        if (svgImage == null) {//GEN-END:|96-getter|0|96-preInit
+            // write pre-init user code here
+            svgImage = SVGImage.createEmptyImage(null);//GEN-LINE:|96-getter|1|96-postInit
+            // write post-init user code here
+        }//GEN-BEGIN:|96-getter|2|
+        return svgImage;
+    }
+//</editor-fold>//GEN-END:|96-getter|2|
+
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: form ">//GEN-BEGIN:|97-getter|0|97-preInit
+    /**
+     * Returns an initialized instance of form component.
+     *
+     * @return the initialized component instance
+     */
+    public Form getForm() {
+        if (form == null) {//GEN-END:|97-getter|0|97-preInit
+            // write pre-init user code here
+            form = new Form("Entre com seu nome", new Item[]{getNome(), getData(), getScore()});//GEN-BEGIN:|97-getter|1|97-postInit
+            form.addCommand(getOkCommand());
+            form.addCommand(getCancelCommand());
+            form.setCommandListener(this);//GEN-END:|97-getter|1|97-postInit
+            // write post-init user code here
+        }//GEN-BEGIN:|97-getter|2|
+        return form;
+    }
+//</editor-fold>//GEN-END:|97-getter|2|
+
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: nome ">//GEN-BEGIN:|100-getter|0|100-preInit
+    /**
+     * Returns an initialized instance of nome component.
+     *
+     * @return the initialized component instance
+     */
+    public TextField getNome() {
+        if (nome == null) {//GEN-END:|100-getter|0|100-preInit
+            // write pre-init user code here
+            nome = new TextField("Nome:", null, 6, TextField.ANY);//GEN-LINE:|100-getter|1|100-postInit
+            // write post-init user code here
+        }//GEN-BEGIN:|100-getter|2|
+        return nome;
+    }
+//</editor-fold>//GEN-END:|100-getter|2|
+
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: score ">//GEN-BEGIN:|101-getter|0|101-preInit
+    /**
+     * Returns an initialized instance of score component.
+     *
+     * @return the initialized component instance
+     */
+    public StringItem getScore() {
+        if (score == null) {//GEN-END:|101-getter|0|101-preInit
+            // write pre-init user code here
+            score = new StringItem("Score:", null);//GEN-LINE:|101-getter|1|101-postInit
+            // write post-init user code here
+        }//GEN-BEGIN:|101-getter|2|
+        return score;
+    }
+//</editor-fold>//GEN-END:|101-getter|2|
+
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: okCommand ">//GEN-BEGIN:|102-getter|0|102-preInit
     /**
      * Returns an initialized instance of okCommand component.
      *
      * @return the initialized component instance
      */
     public Command getOkCommand() {
-        if (okCommand == null) {//GEN-END:|45-getter|0|45-preInit
+        if (okCommand == null) {//GEN-END:|102-getter|0|102-preInit
             // write pre-init user code here
-            okCommand = new Command("Ok", Command.OK, 0);//GEN-LINE:|45-getter|1|45-postInit
+            okCommand = new Command("Salvar", Command.OK, 0);//GEN-LINE:|102-getter|1|102-postInit
             // write post-init user code here
-        }//GEN-BEGIN:|45-getter|2|
+        }//GEN-BEGIN:|102-getter|2|
         return okCommand;
     }
-//</editor-fold>//GEN-END:|45-getter|2|
+//</editor-fold>//GEN-END:|102-getter|2|
 
-
-
-
-
-
-
-//<editor-fold defaultstate="collapsed" desc=" Generated Getter: okCommand1 ">//GEN-BEGIN:|75-getter|0|75-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: cancelCommand ">//GEN-BEGIN:|104-getter|0|104-preInit
     /**
-     * Returns an initialized instance of okCommand1 component.
+     * Returns an initialized instance of cancelCommand component.
      *
      * @return the initialized component instance
      */
-    public Command getOkCommand1() {
-        if (okCommand1 == null) {//GEN-END:|75-getter|0|75-preInit
+    public Command getCancelCommand() {
+        if (cancelCommand == null) {//GEN-END:|104-getter|0|104-preInit
             // write pre-init user code here
-            okCommand1 = new Command("Ok", Command.OK, 0);//GEN-LINE:|75-getter|1|75-postInit
+            cancelCommand = new Command("Cancelar", Command.CANCEL, 0);//GEN-LINE:|104-getter|1|104-postInit
             // write post-init user code here
-        }//GEN-BEGIN:|75-getter|2|
-        return okCommand1;
+        }//GEN-BEGIN:|104-getter|2|
+        return cancelCommand;
     }
-//</editor-fold>//GEN-END:|75-getter|2|
+//</editor-fold>//GEN-END:|104-getter|2|
 
-//<editor-fold defaultstate="collapsed" desc=" Generated Getter: okCommand2 ">//GEN-BEGIN:|77-getter|0|77-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: data ">//GEN-BEGIN:|106-getter|0|106-preInit
     /**
-     * Returns an initialized instance of okCommand2 component.
+     * Returns an initialized instance of data component.
      *
      * @return the initialized component instance
      */
-    public Command getOkCommand2() {
-        if (okCommand2 == null) {//GEN-END:|77-getter|0|77-preInit
+    public StringItem getData() {
+        if (data == null) {//GEN-END:|106-getter|0|106-preInit
             // write pre-init user code here
-            okCommand2 = new Command("Ok", Command.OK, 0);//GEN-LINE:|77-getter|1|77-postInit
+            data = new StringItem("Data", null);//GEN-LINE:|106-getter|1|106-postInit
             // write post-init user code here
-        }//GEN-BEGIN:|77-getter|2|
-        return okCommand2;
+        }//GEN-BEGIN:|106-getter|2|
+        return data;
     }
-//</editor-fold>//GEN-END:|77-getter|2|
+//</editor-fold>//GEN-END:|106-getter|2|
 
-
-
-//<editor-fold defaultstate="collapsed" desc=" Generated Getter: backCommand ">//GEN-BEGIN:|85-getter|0|85-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: backCommand ">//GEN-BEGIN:|112-getter|0|112-preInit
     /**
      * Returns an initialized instance of backCommand component.
      *
      * @return the initialized component instance
      */
     public Command getBackCommand() {
-        if (backCommand == null) {//GEN-END:|85-getter|0|85-preInit
+        if (backCommand == null) {//GEN-END:|112-getter|0|112-preInit
             // write pre-init user code here
-            backCommand = new Command("Back", Command.BACK, 0);//GEN-LINE:|85-getter|1|85-postInit
+            backCommand = new Command("Back", Command.BACK, 0);//GEN-LINE:|112-getter|1|112-postInit
             // write post-init user code here
-        }//GEN-BEGIN:|85-getter|2|
+        }//GEN-BEGIN:|112-getter|2|
         return backCommand;
     }
-//</editor-fold>//GEN-END:|85-getter|2|
+//</editor-fold>//GEN-END:|112-getter|2|
+
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: backCommand1 ">//GEN-BEGIN:|118-getter|0|118-preInit
+    /**
+     * Returns an initialized instance of backCommand1 component.
+     *
+     * @return the initialized component instance
+     */
+    public Command getBackCommand1() {
+        if (backCommand1 == null) {//GEN-END:|118-getter|0|118-preInit
+            // write pre-init user code here
+            backCommand1 = new Command("Back", Command.BACK, 0);//GEN-LINE:|118-getter|1|118-postInit
+            // write post-init user code here
+        }//GEN-BEGIN:|118-getter|2|
+        return backCommand1;
+    }
+//</editor-fold>//GEN-END:|118-getter|2|
+
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: list ">//GEN-BEGIN:|115-getter|0|115-preInit
+    /**
+     * Returns an initialized instance of list component.
+     *
+     * @return the initialized component instance
+     */
+    public List getList() {
+        if (list == null) {//GEN-END:|115-getter|0|115-preInit
+            // write pre-init user code here
+            list = new List("list", Choice.IMPLICIT);//GEN-BEGIN:|115-getter|1|115-postInit
+            list.addCommand(getBackCommand1());
+            list.setCommandListener(this);//GEN-END:|115-getter|1|115-postInit
+            // write post-init user code here
+        }//GEN-BEGIN:|115-getter|2|
+        return list;
+    }
+//</editor-fold>//GEN-END:|115-getter|2|
+
+//<editor-fold defaultstate="collapsed" desc=" Generated Method: listAction ">//GEN-BEGIN:|115-action|0|115-preAction
+    /**
+     * Performs an action assigned to the selected list element in the list
+     * component.
+     */
+    public void listAction() {//GEN-END:|115-action|0|115-preAction
+        // enter pre-action user code here
+        String __selectedString = getList().getString(getList().getSelectedIndex());//GEN-LINE:|115-action|1|115-postAction
+        // enter post-action user code here
+    }//GEN-BEGIN:|115-action|2|
+//</editor-fold>//GEN-END:|115-action|2|
+
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: alert ">//GEN-BEGIN:|122-getter|0|122-preInit
+    /**
+     * Returns an initialized instance of alert component.
+     *
+     * @return the initialized component instance
+     */
+    public Alert getAlert() {
+        if (alert == null) {//GEN-END:|122-getter|0|122-preInit
+            // write pre-init user code here
+            alert = new Alert("Nome est\u00E1 vazio", "O nome n\u00E3o pode ser vazio para gravar a pontua\u00E7\u00E3o", null, AlertType.WARNING);//GEN-BEGIN:|122-getter|1|122-postInit
+            alert.setTimeout(Alert.FOREVER);//GEN-END:|122-getter|1|122-postInit
+            // write post-init user code here
+        }//GEN-BEGIN:|122-getter|2|
+        return alert;
+    }
+//</editor-fold>//GEN-END:|122-getter|2|
 
     /**
      * Returns a display instance.
@@ -242,7 +376,7 @@ public class MainMIDlet extends MIDlet implements CommandListener {
     public void startGame() {
 
         MainGame mainGame = new MainGame(this);
-        mainGame.start();        
+        mainGame.start();
         switchDisplayable(null, mainGame);
     }
 
@@ -275,21 +409,164 @@ public class MainMIDlet extends MIDlet implements CommandListener {
      */
     public void destroyApp(boolean unconditional) {
     }
-    
-    
-    
-    public void goMenuGame( ) {
-        
-        MenuGame menu = new MenuGame(this);
+
+    public void goMenuGame() {
+
+        menu = new MenuGame(this);
         menu.start();
         Display.getDisplay(this).setCurrent(menu);
     }
-    
-    
-    public void goMainGame( ) {
-        
-        MainGame game = new MainGame(this);
+
+    public void goMainGame() {
+
+        game = new MainGame(this);
         game.start();
         Display.getDisplay(this).setCurrent(game);
+    }
+
+    public void goSaveScore(int score) {
+
+
+        Calendar calendar = Calendar.getInstance();
+
+        String data = calendar.get(Calendar.DAY_OF_MONTH) + "/"
+                + (calendar.get(Calendar.MONTH) + 1) + "/"
+                + calendar.get(Calendar.YEAR) + " "
+                + calendar.get(Calendar.HOUR_OF_DAY) + ":";
+
+        if (calendar.get(Calendar.MINUTE) < 9) {
+            data += "0" + calendar.get(Calendar.MINUTE);
+        } else {
+            data += calendar.get(Calendar.MINUTE);
+        }
+
+
+        getData().setText(data);
+        getScore().setText(new Integer(score).toString());
+
+        Display.getDisplay(this).setCurrent(getForm());
+    }
+    private MenuGame menu;
+    private MainGame game;
+
+    public void saveScore() {
+
+        if (getNome().getString() != null && getNome().getString().length() != 0) {
+
+            try {
+
+                Registro ultimo = getRegistro();
+
+                Registro[] registros = listarRegistros();
+                Registro[] novaLista = new Registro[registros.length + 1];
+
+                for (int i = 0; i < registros.length; i++) {
+                    novaLista[i] = registros[i];
+                }
+                novaLista[novaLista.length - 1] = ultimo;
+
+
+
+                RecordStore.deleteRecordStore(NAME_SOKOBAN);
+
+
+                RecordStore recordStore =
+                        RecordStore.openRecordStore(NAME_SOKOBAN, true);
+
+                sort(novaLista);
+                int max = novaLista.length < 5 ? novaLista.length : 5;
+                for (int i = 0; i < max; i++) {
+                    System.out.println(novaLista[i].toString());
+
+                    byte[] byteOutputData = novaLista[i].toString().getBytes();
+                    recordStore.addRecord(byteOutputData, 0, byteOutputData.length);
+
+                }
+
+
+                recordStore.closeRecordStore();
+                goMenuGame();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            Display.getDisplay(this).setCurrent(getAlert(), getForm());
+        }
+    }
+
+    /**
+     * Lista todos os registros que estao gravados no recordStore
+     *
+     * @return
+     */
+    public Registro[] listarRegistros() {
+        try {
+            RecordStore recordStore =
+                    RecordStore.openRecordStore(NAME_SOKOBAN, true);
+
+            byte[] recData = new byte[5];
+            Registro[] registros = new Registro[recordStore.getNumRecords()];
+            for (int i = 1; i < recordStore.getNumRecords() + 1; i++) {
+                if (recordStore.getRecordSize(i) > recData.length) {
+                    recData = new byte[recordStore.getRecordSize(i)];
+                }
+
+                int len = recordStore.getRecord(i, recData, 0);
+                System.out.println("Record #" + i + ": " + new String(recData, 0, len));
+                System.out.println("------------------------------");
+
+                Registro novoRegistro = new Registro(new String(recData, 0, len));
+                registros[i - 1] = novoRegistro;
+
+            }
+
+
+            recordStore.closeRecordStore();
+            return registros;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public void sort(Registro[] registros) {
+
+
+        int index_min;
+        Registro aux;
+
+        for (int i = 0; i < registros.length; i++) {
+            index_min = i;
+            for (int j = i + 1; j < registros.length; j++) {
+                if (registros[j].getScore() > registros[index_min].getScore()) {
+                    index_min = j;
+                }
+            }
+            if (index_min != i) {
+                aux = registros[index_min];
+                registros[index_min] = registros[i];
+                registros[i] = aux;
+            }
+        }
+
+    }
+
+    private Registro getRegistro() {
+        String name = getNome().getString();
+        String date = getData().getText();
+        String pontuacao = getScore().getText();
+
+        Registro registro = new Registro(name, date, pontuacao);
+        return registro;
+    }
+
+    public void goPontuacao() {
+
+        ScoreList lista = new ScoreList(this);
+        lista.start();
+
+        Display.getDisplay(this).setCurrent(lista);
+
     }
 }
