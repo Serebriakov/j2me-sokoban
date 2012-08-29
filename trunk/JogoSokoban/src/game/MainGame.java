@@ -33,6 +33,7 @@ public class MainGame extends GameCanvas implements Runnable {
     private Timer timer;
     private Thread runner;
     private MainMIDlet midlet;
+    private int score;
 
     public MainGame(MainMIDlet midlet) {
         super(false);
@@ -47,13 +48,15 @@ public class MainGame extends GameCanvas implements Runnable {
     public void run() {
         int cenariosCount = 1;
 
+        loop:
         for (int i = 0; i < cenariosCount; i++) {
             cenarioIndexAtual = i;
             cenarioAtual = Cenario.getCenario(i);
             initCenario(cenarioAtual);
 
             showTextoCentro("Cenário " + (cenarioIndexAtual + 1));
-            while (!cenarioAtual.isCompleted()) {
+            while (!cenarioAtual.isCompleted()
+                    && !(clock.getTimeLeft() < 0)) {
                 try {
                     verifyGameState();
                     checkUserInput();
@@ -64,8 +67,27 @@ public class MainGame extends GameCanvas implements Runnable {
                     e.printStackTrace();
                 }
             }
+
+            score += (clock.getTimeLeft() > 0 ? clock.getTimeLeft() : 0)*10 + winnedSpot*10 ;
+            if (cenarioAtual.timeout == clock.getTimeLeft()) {
+                break loop;
+            } 
+
         }
-        showTextoCentro("Fim do jogo");
+        try {
+            timer.cancel();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (clock.getTimeLeft() < 0) {
+            showTextoCentro("O tempo acabou, tente novamente!");
+            midlet.goSaveScore(score);
+            
+        } else {
+            showTextoCentro("Você venceu!");
+            midlet.goSaveScore(score);
+        }
+
     }
 
     /**
@@ -144,11 +166,12 @@ public class MainGame extends GameCanvas implements Runnable {
             move(LEFT);
         } else if ((keyState & RIGHT_PRESSED) != 0) {
             move(RIGHT);
-        } else if (keyState == 1024) {
-            cenarioAtual = Cenario.getCenario(cenarioIndexAtual);
-            initCenario(cenarioAtual);
-            showTextoCentro("Cenário " + (cenarioIndexAtual + 1));
         }
+//        else if (keyState == 1024) {
+//            cenarioAtual = Cenario.getCenario(cenarioIndexAtual);
+//            initCenario(cenarioAtual);
+//            showTextoCentro("Cenário " + (cenarioIndexAtual + 1));
+//        }
 
 
     }
@@ -381,6 +404,8 @@ public class MainGame extends GameCanvas implements Runnable {
         g.drawString("Tempo: " + timeLeft + "s", 0, 0, 0);
 
         // reset the color
+
+
         g.setColor(0x000000);
 
     }

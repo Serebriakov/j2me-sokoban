@@ -81,7 +81,7 @@ public class Cenario extends LayerManager {
                 {1, 2, 1, 2, 2, 4, 3, 1},
                 {1, 2, 4, 2, 2, 2, 3, 1},
                 {1, 1, 1, 1, 1, 1, 1, 1},};
-            return getCenario(sprite, 8, 8, fase, 3, 16,90);
+            return getCenario(sprite, 8, 8, fase, 3, 16,20);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
