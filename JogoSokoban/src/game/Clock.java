@@ -4,7 +4,7 @@ import java.util.TimerTask;
 
 /**
  *
- * @author jaspion
+ * @author lucasirc
  */
 public class Clock extends TimerTask {
 

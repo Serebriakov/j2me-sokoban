@@ -7,7 +7,7 @@ import javax.microedition.lcdui.game.Sprite;
 
 /**
  *
- * @author jaspion
+ * @author lucasirc
  */
 public class CharacterSprite extends Sprite {
 

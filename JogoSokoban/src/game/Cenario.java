@@ -9,7 +9,7 @@ import javax.microedition.lcdui.game.TiledLayer;
 
 /**
  *
- * @author jaspion
+ * @author lucasirc
  */
 public class Cenario extends LayerManager {
 

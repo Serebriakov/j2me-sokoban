@@ -11,7 +11,7 @@ import javax.microedition.rms.RecordStore;
 import org.netbeans.microedition.lcdui.SplashScreen;
 
 /**
- * @author jaspion
+ * @author lucasirc
  */
 public class MainMIDlet extends MIDlet implements CommandListener {
 

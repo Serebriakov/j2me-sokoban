@@ -12,7 +12,7 @@ import javax.microedition.lcdui.game.GameCanvas;
 
 /**
  *
- * @author jaspion
+ * @author lucasirc
  */
 public class MenuGame extends GameCanvas implements Runnable {
 
