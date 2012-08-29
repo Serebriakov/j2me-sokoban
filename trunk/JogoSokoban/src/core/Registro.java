@@ -4,7 +4,7 @@ import core.util.StringUtil;
 
 /**
  *
- * @author jaspion
+ * @author lucasirc
  */
 public class Registro {
 

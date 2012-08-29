@@ -13,7 +13,7 @@ import javax.microedition.lcdui.game.TiledLayer;
 
 /**
  *
- * @author jaspion
+ * @author lucasirc
  */
 public class MainGame extends GameCanvas implements Runnable {
 

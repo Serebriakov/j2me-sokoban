@@ -5,7 +5,7 @@ import java.util.Vector;
 
 /**
  *
- * @author jaspion
+ * @author lucasirc
  */
 public class StringUtil {
 /**
